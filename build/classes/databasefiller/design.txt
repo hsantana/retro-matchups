@@ -1,0 +1,255 @@
+//-------------------------------
+//Open roster file.
+//
+//Create hash table with rosters.
+//  Key: Retrosheet player ID.
+//  Data1: lastName.
+//  Data2: name.
+//  Data3: team
+//  Data4: position
+//
+//-------------------------------
+//
+//Open each team season games.
+//Variables:
+//- park: currentPark.
+//- time: Day or Night.
+//- pitcherHomeID: playerID.
+//- pitcherVisitorID: playerID.
+//- batterHomeID: playerID.
+//- batterVisitorID: playerID.
+//- saverPitcherID: playerID
+//- winPitcherID: playerID
+//- losePitcherID: playerID
+//- erPitcherID: playerID
+// - result
+//
+//if line doesnt starts with play/sub/data/start/info, go to next line.
+//if info:
+//   if (1)==daynight
+//      time=(2).
+//
+//   if (1)==site
+//          parkID=(2)
+//
+//   if (1)==wp
+//      winPitcherID=(2)
+//          SQL: Add winPitcher, Park, Win+1 to pitchersParks. 
+//          - Get player name and lastname from HashTable.
+//          - addWinPark(nameFirst, nameLast, parkID)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE parkPitchers SET Win=oldWin+1 WHERE table.playerID=playerID and table.parkID=parkID
+//          
+//          SQL: Add winPitcher, time, Win+1 to timePitchers.
+//          - Get player name and lastname from HashTable.
+//          - addWinTime(nameFirst, nameLast, time)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE timePitchers SET Win=oldWin+1 WHERE table.playerID=playerID and table.time=time
+//
+//   if (1) == lp
+//      losePitcherID=(2);
+//          SQL: Add losePitcher, Park, Lose+1 to pitchersParks. 
+//          - Get player name and lastname from HashTable.
+//          - addLosePark(nameFirst, nameLast, parkID)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE parkPitchers SET Lose=oldLose+1 WHERE table.playerID=playerID and table.parkID=parkID
+//          
+//          SQL: Add losePitcher, time, Lose+1 to timePitchers.
+//          - Get player name and lastname from HashTable.
+//          - addLoseTime(nameFirst, nameLast, time)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE timePitchers SET Lose=oldLose+1 WHERE table.playerID=playerID and table.time=time
+//
+//   if (1)==save
+//      if not empty:
+//          savePitcher=(2)  
+//          
+//          SQL: Add saverPitcher, Park, SV+1 to pitchersParks. 
+//          - Get player name and lastname from HashTable.
+//          - addSavePark(nameFirst, nameLast, parkID)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE parkPitchers SET SV=oldSV+1 WHERE playerID=playerID and parkID=parkID
+//          
+//          SQL: Add saverPitcher, time, SV+1 to timePitchers.
+//          - Get player name and lastname from HashTable.
+//          - addSaveTime(nameFirst, nameLast, time)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE timePitchers SET SV=oldSV+1 WHERE table.playerID=playerID and table.time=time
+//
+//if start:
+//  if (5)==1 and (3)==0, pitcherVisitID=(1).
+//      SQL: Add pitcherVisitID, Park, GS+1, G+1 to pitchersParks.
+//          - Get player name and lastname from HashTable.
+//          - addStartPark(nameFirst, nameLast, parkID)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE parkPitchers SET GS=oldGS+1, G=oldG+1 WHERE table.playerID=playerID and table.parkID=parkID
+//   
+//      SQL: Add pitcherVisitID, time, GS+1, G+1 to timePitchers.
+//          - Get player name and lastname from HashTable.
+//          - addStartTime(nameFirst, nameLast, time)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE timePitchers SET GS=oldGS+1, G=oldG+1 WHERE table.playerID=playerID and table.time=time
+//   
+//  if (5)==1 and (3)==1, currentPitcherHome=(1) HASH.
+//      SQL: Add pitcherHomeID, Park, GS+1, G+1 to pitchersParks.
+//          - Get player name and lastname from HashTable.
+//          - addStartPark(nameFirst, nameLast, parkID)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE parkPitchers SET GS=oldGS+1, G=oldG+1 WHERE table.playerID=playerID and table.parkID=parkID
+//   
+//      SQL: Add pitcherHomeID, time, GS+1, G+1 to timePitchers.  
+//          - Get player name and lastname from HashTable.
+//          - addStartTime(nameFirst, nameLast, time)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE timePitchers SET GS=oldGS+1, G=oldG+1 WHERE table.playerID=playerID and table.time=time
+//   
+//  if (5)!=1,  batterStartID=(1) HASH.
+//      SQL: Add batterStartID, Park, G+1 to parkHitters.
+//          - Get player name and lastname from HashTable.
+//          - addGHittersPark(nameFirst, nameLast, parkID)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE parkHitters SET G=oldG+1 WHERE table.playerID=playerID and table.parkID=parkID
+//   
+//      SQL: Add batterStartID, time, G+1 to timeHitters.  
+//          - Get player name and lastname from HashTable.
+//          - addGHittersTime(nameFirst, nameLast, time)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE timeHitters SET G=oldG+1 WHERE table.playerID=playerID and table.time=time
+//  
+//if play:
+// if (6)!=NP
+//  if (2)==1:
+//      batterHomeID=(3), result=(6).
+//      SQL: Add pitcherVisitID, batterHome, result to matchups.
+//          -Get players name and lastname from hashTable.
+//          -addResultMatchup(nameFirstBatter, nameLastBatter, nameFirstPitcher, nameLastPitcher, result)
+//          
+//      SQL: Add pitcherVisitID, park, result to pitchersPark.
+//          -Get pitcher name and lastname from hashtable.
+//          -addPitcherPark(nameFirst, nameLast, ParkID, Result)
+//
+//      SQL: Add pitcherVisitID, time, result to timePitchers.
+//          -Get pitcher name and lastname from hashtable.
+//          -addPitcherTime(nameFirst, nameLast, Time, Result)
+//
+//      SQL: Add batterHomeID, park, result to battersPark.
+//          -Get batter name and lastname from hashtable.
+//          -addBatterPark(nameFirst, nameLast, ParkID, Result)
+//
+//      SQL: Add batterHomeID, time, result to timeBatters.
+//          -Get batter name and lastname from hashtable.
+//          -addBatterTime(nameFirst, nameLast, Time, Result)
+//
+//  if (2)==0:
+//      batterVisitingID=(3), result=(6).
+//      SQL: Add pitcherHomeID, currentBatterVisiting, result to matchups.
+//          -Get players name and lastname from hashTable.
+//          -addResultMatchup(nameFirstBatter, nameLastBatter, nameFirstPitcher, nameLastPitcher, result)
+//
+//      SQL: Add pitcherHomeID, park, result to pitchersPark.
+//          -Get pitcher name and lastname from hashtable.
+//          -addPitcherPark(nameFirst, nameLast, ParkID, Result)
+//
+//
+//      SQL: Add pitcherHomeID, time, result to timePitchers.
+//      SQL: Add batterVisitID, park, result to battersPark.
+//      SQL: Add batterVisitID, time, result to timeBatters.
+//if sub:
+// if (5)==1: Position
+//      if (3)==1: Home
+//            pitcherHomeID=(1).
+//            SQL: Add currentPitcherHome, Park, G+1 to pitchersParks.
+//            - Get player name and lastname from HashTable.
+//            - addGPitchersPark(nameFirst, nameLast, parkID)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE parkPitchers SET G=oldG+1 WHERE table.playerID=playerID and table.parkID=parkID
+// 
+//            SQL: Add currentPitcherHome, time, G+1 to timePitchers.
+//           - Get player name and lastname from HashTable.
+//           - addGPitchersTime(nameFirst, nameLast, time)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE timePitchers SET G=oldG+1 WHERE table.playerID=playerID and table.time=time
+//
+//      if (3)==0: Visiting
+//            pitcherVisitID=(0).
+//            SQL: Add currentPitcherVisiting, Park, G+1 to pitchersParks.
+//            - Get player name and lastname from HashTable.
+//            - addSubPark(nameFirst, nameLast, parkID)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE parkPitchers SET G=oldG+1 WHERE table.playerID=playerID and table.parkID=parkID
+// 
+//            SQL: Add currentPitcherVisiting, time, G+1 to timePitchers.
+//            - Get player name and lastname from HashTable.
+//            - addSubTime(nameFirst, nameLast, time)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE timePitchers SET G=oldG+1 WHERE table.playerID=playerID and table.time=time
+//  if(5)!=1: NonPitcher
+//          batterSubID=(1)
+//            SQL: Add batterSubID, Park, G+1 to hitterParks.
+//            - Get player name and lastname from HashTable.
+//            - addGHittersPark(nameFirst, nameLast, parkID)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE parkHitters SET G=oldG+1 WHERE table.playerID=playerID and table.parkID=parkID
+// 
+//            SQL: Add batterSubID, time, G+1 to timeHitters.
+//           - Get player name and lastname from HashTable.
+//           - addGHittersTime(nameFirst, nameLast, time)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE timeHitters SET G=oldG+1 WHERE table.playerID=playerID and table.time=time
+//
+//if data:
+//  if (1)==er:
+//          erPitcherID=(2)
+//          erNumber=(3)
+//          SQL: Add erPitcher, Park, ER+X(erNumber) to pitchersParks. 
+//          - Get player name and lastname from HashTable.
+//          - addErPark(nameFirst, nameLast, parkID)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE parkPitchers SET ER=oldER+1 WHERE table.playerID=playerID and table.parkID=parkID
+// 
+//          SQL: Add erPitcher, time, ER+1 to timePitchers.
+//          - Get player name and lastname from HashTable.
+//          - addErTime(nameFirst, nameLast, time)
+//                 - Get playerID from Master (nameFirst, nameLast)
+//                 - UPDATE timePitchers SET ER=oldER+1 WHERE table.playerID=playerID and table.time=time
+//
+
+
+//---------------------
+//Results:
+// Cut the received String by / or .
+//
+//- SB: Skip.
+//- WP: Skip.
+//- PB: Skip. Passed Ball.
+//- BK = balk : Skip.
+//- C= Interference. - Skip
+
+//- CS: +1 I pitcher.
+//- FLE (FL): Skip. Fould ball error.
+//- #: IGNORE.
+//- (B): IGNORE.
+//- (N): IGNORE.
+//------------------
+//- S.
+//- D.
+//- T.
+//- HR.
+//- W.
+//- K.
+//- HP=HBP.
+//- IW=IBB.
+//
+// -PO: Picked Of base
+//  -E: Error get on base.
+//OUT: 
+//  -FC: Fielders Choice.
+//  -Digit
+//
+//---------------------------------------------
+//
+//
+//C= Interference, INNINGS AND GAMES FOR HITTERS NOT CORRECT.
+//INNINGS:
+//GAMES: WHEN A PLAYER ENTERS A GAME, SOMETIMES IT IS LISTED TWICE, SO 2 GAMES ARE ADDED INSTEAD OF 1.
+//C=Interference:
