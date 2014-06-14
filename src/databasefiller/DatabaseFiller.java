@@ -31,38 +31,18 @@ public class DatabaseFiller {
         // TODO code application logic here
         DatabaseFiller.db.connect("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/santana?"+"user=root&password=root");
         
-
-        //System.out.println(db.isActive("colob001"));
-        /*System.out.println(db.getPlayerID("Al", "Levine"));
-        System.out.println(db.getPlayerID("Jay", "Ryan"));
-        System.out.println(db.getPlayerID("Denny", "Hocking"));
-        System.out.println(db.getPlayerID("Herbert", "Perry"));
-        System.out.println(db.getPlayerID("Toma", "Ohka"));
-        System.out.println(db.getPlayerID("Eugene", "Kingsale"));
-        System.out.println(db.getPlayerID("Bob", "Howry"));
-        System.out.println(db.getPlayerID("Carlos A.", "Hernandez"));
-        System.out.println(db.getPlayerID("Ronnie", "Belliard"));
-        System.out.println(db.getPlayerID("Dave", "Weathers"));
-        System.out.println(db.getPlayerID("Manny", "Aybar"));
-        */
-        //db.addPitcherTimeResult("Curt", "Schilling","night", "T");
-        //db.addPitcherTimeResult("Andy", "Pettitte","day","HR");
-        //db.addPitcherTimeResult("Charles", "Nagy","night", "Out");
-        //db.addPitcherTimeResult("Francisco", "Rodriguez","night", "Skip");
-        
         //RUN!
         
-        final File[] allRosters=DatabaseFiller.getRosters(); 
+        //final File[] allRosters=DatabaseFiller.getRosters(); //I think not used anymore.
         final File[] allGames=DatabaseFiller.getGames();
-        DatabaseFiller.setHasTable(allRosters);
+        
+        //DatabaseFiller.setHasTable(allRosters); //I think not used anymore.
         
         for(int i =0; i<allGames.length; i++){
             DatabaseFiller.getGamesInFolder(allGames[i]);
         }
         //db.addParkTeams();
         //db.printTimeHitters();
-        
-        
         //Object[] keysArrays=DatabaseFiller.playersHash.keySet().toArray();
         //for(int i =0; i<keysArrays.length; i++){
             //PlayerInfo playerInfo=(PlayerInfo)DatabaseFiller.playersHash.get(keysArrays[i]);
@@ -73,7 +53,7 @@ public class DatabaseFiller {
         
     }
     
-        public static File[] getRosters(){
+    public static File[] getRosters(){
         
         //final File rosters2000 = new File("/Users/hugo/Documents/Side Projects/Baseball/Raw Files/2000eve/Rosters");
         //final File rosters2001 = new File("/Users/hugo/Documents/Side Projects/Baseball/Raw Files/2001eve/Rosters");
@@ -144,8 +124,6 @@ public class DatabaseFiller {
         String erPitcherID="";
         String erNumber="";
         String result="";
-        PlayerInfo currentPlayerInfo;
-        PlayerInfo currentPlayerInfo2;//Used when need 2 at a time
         
         try {
             String line = br.readLine();
@@ -333,49 +311,7 @@ public class DatabaseFiller {
             br.close();
         }
     }
-    
-    public static void setHasTable(File[] allRosters){
-        for(int i = 0; i<allRosters.length; i++){
-            try {
-                DatabaseFiller.getRostersInFolder(allRosters[i]); //Calls readFile, creates the HashTable.
-            } catch (IOException ex) {
-                Logger.getLogger(DatabaseFiller.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-    
-    public static void getRostersInFolder(final File folderPath) throws IOException{
-        File currentFile;
-        for (final File fileEntry : folderPath.listFiles()) {
-            if(fileEntry.getName().equals(".DS_Store")==false){
-               currentFile= new File(folderPath+"/"+fileEntry.getName());
-               DatabaseFiller.readRosterFile(currentFile);
-            }
-        }
-    }
-    
-    public static void readRosterFile(File filePath) throws FileNotFoundException, IOException{
-    
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line = br.readLine();
-            String[] currentValues= new String[6];
-            String currentKey;
-            
-            while (line != null) {
-                currentValues=line.split(",");
-                currentKey=currentValues[0];
-                PlayerInfo playerInfo= new PlayerInfo(currentValues[2],currentValues[1],currentValues[5],currentValues[6]);
-               
-                //DatabaseFiller.fillPlayersHash(currentKey,playerInfo);
-                line = br.readLine();
-            }
-        }
-    }
-    
-    //public static void fillPlayersHash(String key, PlayerInfo playerInfo){
-      //  DatabaseFiller.playersHash.put(key,playerInfo);
-    //}
-    
+
     public static String convertResult(String result){
            String originalResult=result;
            
@@ -432,5 +368,44 @@ public class DatabaseFiller {
             return DatabaseFiller.convertResult(result);
         }
     }
+    
+        
+    /*public static void setHasTable(File[] allRosters){
+        for(int i = 0; i<allRosters.length; i++){
+            try {
+                DatabaseFiller.getRostersInFolder(allRosters[i]); //Calls readFile, creates the HashTable.
+            } catch (IOException ex) {
+                Logger.getLogger(DatabaseFiller.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//I think not needed*/
+    
+    /*public static void getRostersInFolder(final File folderPath) throws IOException{
+        File currentFile;
+        for (final File fileEntry : folderPath.listFiles()) {
+            if(fileEntry.getName().equals(".DS_Store")==false){
+               currentFile= new File(folderPath+"/"+fileEntry.getName());
+               DatabaseFiller.readRosterFile(currentFile);
+            }
+        }
+    }//I think not needed*/
+    
+        /*public static void readRosterFile(File filePath) throws FileNotFoundException, IOException{
+    
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line = br.readLine();
+            String[] currentValues= new String[6];
+            String currentKey;
+            
+            while (line != null) {
+                currentValues=line.split(",");
+                currentKey=currentValues[0];
+                PlayerInfo playerInfo= new PlayerInfo(currentValues[2],currentValues[1],currentValues[5],currentValues[6]);
+               
+                //DatabaseFiller.fillPlayersHash(currentKey,playerInfo);
+                line = br.readLine();
+            }
+        }
+    }//I think not needed*/
 }
 
