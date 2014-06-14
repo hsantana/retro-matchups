@@ -6,12 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import static java.lang.Character.isDigit;
-import java.lang.reflect.Array;
-import java.nio.file.Files;
 import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -19,16 +14,9 @@ import java.util.logging.Logger;
  */
 public class DatabaseFiller {
 
-    //Contains retrosheet Ids, name, lastname, position, team.
-    //Used to convert from RS Id to Lahman ID.
-    //public static Hashtable playersHash= new Hashtable <String, PlayerInfo>();
     public static MySQLAccessRotoID db = new MySQLAccessRotoID();
     
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) throws IOException, Exception {
-        // TODO code application logic here
         DatabaseFiller.db.connect("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/santana?"+"user=root&password=root");
         
         //RUN!
@@ -369,43 +357,5 @@ public class DatabaseFiller {
         }
     }
     
-        
-    /*public static void setHasTable(File[] allRosters){
-        for(int i = 0; i<allRosters.length; i++){
-            try {
-                DatabaseFiller.getRostersInFolder(allRosters[i]); //Calls readFile, creates the HashTable.
-            } catch (IOException ex) {
-                Logger.getLogger(DatabaseFiller.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }//I think not needed*/
-    
-    /*public static void getRostersInFolder(final File folderPath) throws IOException{
-        File currentFile;
-        for (final File fileEntry : folderPath.listFiles()) {
-            if(fileEntry.getName().equals(".DS_Store")==false){
-               currentFile= new File(folderPath+"/"+fileEntry.getName());
-               DatabaseFiller.readRosterFile(currentFile);
-            }
-        }
-    }//I think not needed*/
-    
-        /*public static void readRosterFile(File filePath) throws FileNotFoundException, IOException{
-    
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line = br.readLine();
-            String[] currentValues= new String[6];
-            String currentKey;
-            
-            while (line != null) {
-                currentValues=line.split(",");
-                currentKey=currentValues[0];
-                PlayerInfo playerInfo= new PlayerInfo(currentValues[2],currentValues[1],currentValues[5],currentValues[6]);
-               
-                //DatabaseFiller.fillPlayersHash(currentKey,playerInfo);
-                line = br.readLine();
-            }
-        }
-    }//I think not needed*/
 }
 
