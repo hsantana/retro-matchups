@@ -13,6 +13,7 @@ import java.sql.SQLException;
  * @author hugo
  */
 public class DatabaseFiller {
+    //Testing GitHub on computer. Should update commits counter on www.github.com from now.
 
     public static MySQLAccessRotoID db = new MySQLAccessRotoID();
     
