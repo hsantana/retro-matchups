@@ -18,30 +18,24 @@ public class DatabaseFiller {
     public static MySQLAccessRotoID db = new MySQLAccessRotoID();
     
     public static void main(String[] args) throws IOException, Exception {
+        //Connect to the database. Add yourusername and password.
         DatabaseFiller.db.connect("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/santana?"+"user=root&password=root");
         
         //RUN!
         
-        //final File[] allRosters=DatabaseFiller.getRosters(); //I think not used anymore.
+        //final File[] allRosters=DatabaseFiller.getRosters(); //Not using rosters files now.
         final File[] allGames=DatabaseFiller.getGames();
-        
-        //DatabaseFiller.setHasTable(allRosters); //I think not used anymore.
         
         for(int i =0; i<allGames.length; i++){
             DatabaseFiller.getGamesInFolder(allGames[i]);
         }
-        //db.addParkTeams();
-        //db.printTimeHitters();
-        //Object[] keysArrays=DatabaseFiller.playersHash.keySet().toArray();
-        //for(int i =0; i<keysArrays.length; i++){
-            //PlayerInfo playerInfo=(PlayerInfo)DatabaseFiller.playersHash.get(keysArrays[i]);
-            //System.out.println(playerInfo.name+" "+playerInfo.lastName + "-"+playerInfo.position+"-"+playerInfo.team);
-        //}
-        
-        
         
     }
-    
+    /* 
+    This method returns an array with the rosters files by year.
+    Right now I do it file by file, a method that scans the whole folder could be implemented.
+    I prefer to do it file by file because scanning all the files at once takes too much time.
+    */
     public static File[] getRosters(){
         
         //final File rosters2000 = new File("/Users/hugo/Documents/Side Projects/Baseball/Raw Files/2000eve/Rosters");
@@ -64,6 +58,11 @@ public class DatabaseFiller {
         return allRosters;
     }
     
+     /* 
+    This method returns an array with the games files by year.
+    Right now I do it file by file, a method that scans the whole folder could be implemented.
+    I prefer to do it file by file because scanning all the files at once takes too much time.
+    */
     public static File[] getGames(){
         
         //final File games2000 = new File("/Users/hugo/Documents/Side Projects/Baseball/Raw Files/2000eve/Games");
@@ -86,6 +85,10 @@ public class DatabaseFiller {
         return allGames;
     }
     
+    /* 
+    This method receives the location of the game files of all teams from a single season
+    It calls readGameFile with a specific team game file.
+    */
     public static void getGamesInFolder(final File folderPath) throws IOException, FileNotFoundException, SQLException{
         File currentFile;
         for (final File fileEntry : folderPath.listFiles()) {
@@ -96,6 +99,14 @@ public class DatabaseFiller {
         }
     }
     
+    /* 
+    This method receives specific team game file
+    It scans the files line by line.
+    First reads the info of the game and then the play by play actions.
+    When the result of a play is reached, it calls getResult and convertResult.
+    When it has the result of a play it calls the right methods that access the database
+    
+    */
     public static void readGameFile(File filePath) throws FileNotFoundException, IOException, SQLException{
         BufferedReader br = new BufferedReader(new FileReader(filePath));
     
@@ -153,7 +164,6 @@ public class DatabaseFiller {
                                             db.addPitcherParkLose(losePitcherID, parkID);
                                             db.addPitcherTimeLose(losePitcherID, time);
                                     }
-                                    //DO SQL
                                 }
                                 //------------------------------------------
                                 //SAVE PITCHER
@@ -301,6 +311,11 @@ public class DatabaseFiller {
         }
     }
 
+    
+    /* 
+    This method receives a string with the result of a play and returns:
+    Out, HP, IW, HR, CS, PO or SKIP.
+    */
     public static String convertResult(String result){
            String originalResult=result;
            
@@ -332,6 +347,13 @@ public class DatabaseFiller {
         
     }
     
+    /* 
+    This method receives a string that contains the results of a play.
+    It ignores the nonrelevant information after '/'
+    when it has the exact play, calls convertResult to get the output of the play.
+    Returns SH for sacrifice hit, or SF for sacrifice fly for those cases.
+    See convert Result for the other return options.
+    */
     public static String getResult(String result){
         int breakIndex=0;
         boolean isSHSF=false;

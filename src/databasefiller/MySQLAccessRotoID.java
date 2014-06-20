@@ -12,12 +12,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ *Methods to interact with the database.
+ * Some of them are never used or where used for other functions nor relevant to this package.
  * @author hugo
  */
 public class MySQLAccessRotoID {
   private Connection connect = null;
   
+  
+/* 
+This method connects to the database.
+Called at the beginning of the DatabaseFiller main.
+*/
   public void connect(String driver, String userPassword) throws SQLException{
       try {
           Class.forName(driver);
@@ -27,7 +33,7 @@ public class MySQLAccessRotoID {
       }
 }
   
-  public void readDataBase() throws Exception {
+ /* public void readDataBase() throws Exception {
     try {
       
       Statement statement= this.connect.createStatement();
@@ -37,7 +43,7 @@ public class MySQLAccessRotoID {
     } catch (Exception e) {
       throw e;
     }
-  }
+  }*/
   
   public void writeParks(String parkID, String name, String city, String state, String league) throws SQLException{
       PreparedStatement preparedStatement = this.connect.prepareStatement("INSERT into  SANTANA.PARKS values (?, ?, ?, ?, ? , ?, ?)");
@@ -51,18 +57,6 @@ public class MySQLAccessRotoID {
       preparedStatement.setString(6, league);
       preparedStatement.setString(7, " ");
       preparedStatement.executeUpdate();
-  }
-
-  private void writeMetaData(ResultSet resultSet) throws SQLException {
-    //   Now get some metadata from the database
-    // Result set get the result of the SQL query
-    
-    System.out.println("The columns in the table are: ");
-    
-    System.out.println("Table: " + resultSet.getMetaData().getTableName(1));
-    for  (int i = 1; i<= resultSet.getMetaData().getColumnCount(); i++){
-      System.out.println("Column " +i  + " "+ resultSet.getMetaData().getColumnName(i));
-    }
   }
 
   private void writeResultSet(ResultSet resultSet) throws SQLException {

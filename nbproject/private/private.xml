@@ -6,7 +6,7 @@
         <group name="practice"/>
         <group name="baseballApp">
             <file>file:/Users/hugo/NetBeansProjects/databaseFiller/src/databasefiller/DatabaseFiller.java</file>
-            <file>file:/Users/hugo/NetBeansProjects/databaseFiller/src/databasefiller/Design.java</file>
+            <file>file:/Users/hugo/NetBeansProjects/databaseFiller/src/databasefiller/MySQLAccessRotoID.java</file>
         </group>
     </open-files>
 </project-private>
